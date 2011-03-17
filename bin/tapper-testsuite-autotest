@@ -1,0 +1,17 @@
+#!/opt/artemis/bin/perl
+
+use Log::Log4perl;
+
+my $string = "
+log4perl.rootLogger                               = DEBUG, root
+log4perl.appender.root                            = Log::Log4perl::Appender::Screen
+log4perl.appender.root.layout                     = SimpleLayout";
+Log::Log4perl->init(\$string);
+
+use Tapper::TestSuite::AutoTest;
+
+my $wrapper = Tapper::TestSuite::AutoTest->new();
+my $args = $wrapper->parse_args();
+$args = $wrapper->install($args);
+$args = $wrapper->run($args);
+$args = $wrapper->send_results($args);

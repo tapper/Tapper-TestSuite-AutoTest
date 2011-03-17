@@ -1,0 +1,81 @@
+NAME
+    TestSuite::AutoTestWrapper - Wrap autotest for reporting in Tapper!
+
+SYNOPSIS
+    This module wraps autotest to make its (sub) tests available for Tapper.
+
+        use TestSuite::AutoTestWrapper;
+
+        my $wrapper = TestSuite::AutoTestWrapper->new();
+        my $args    = $wrapper->parse_args();
+        $args       = $wrapper->install($args);
+        $args       = $wrapper->run($args);
+        $args       = $wrapper->send_results($args);
+
+FUNCTIONS
+  install
+
+    Install the autotest framework into the given targe
+
+    @param hash ref - args
+
+    @return hash ref - args
+
+  send_results
+
+    Send the test results to Tapper.
+
+    @param hash ref - args
+
+    @return hash ref - args
+
+  parse_args
+
+    Parse command line arguments and Tapper ENV variables.
+
+    @return hash ref - args
+
+  run
+
+    Run the requested autotest test(s), collect their results and report
+    them.
+
+    @param hash ref - args
+
+    @return hash ref - args
+
+BUGS
+    Please report any bugs or feature requests to
+    `bug-tapper-testsuite-autotest at rt.cpan.org', or through the web
+    interface at
+    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Tapper-TestSuite-AutoTest
+    . I will be notified, and then you'll automatically be notified of
+    progress on your bug as I make changes.
+
+SUPPORT
+    You can find documentation for this module with the perldoc command.
+
+        perldoc Tapper::TestSuite::AutoTest
+
+    You can also look for information at:
+
+    * RT: CPAN's request tracker
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Tapper-TestSuite-AutoTest
+
+    * AnnoCPAN: Annotated CPAN documentation
+        http://annocpan.org/dist/TestSuite-AutoTestWrapper
+
+    * CPAN Ratings
+        http://cpanratings.perl.org/d/Tapper-TestSuite-AutoTest
+
+    * Search CPAN
+        http://search.cpan.org/dist/Tapper-TestSuite-AutoTest/
+
+AUTHOR
+    AMD OSRC Tapper Team, `<tapper at amd64.org>'
+
+COPYRIGHT & LICENSE
+    Copyright 2008-2011 AMD OSRC Tapper Team, all rights reserved.
+
+    This program is released under the following license: freebsd
+
