@@ -14,7 +14,10 @@ requires 'Moose';
 requires 'Getopt::Long';
 requires 'File::ShareDir';
 requires 'Tapper::Base';
-
+requires 'Sys::Hostname';
+requires 'YAML::Syck';
+requires 'Archive::Tar';
+requires 'IO::Socket::INET';
 
 auto_install;
 
