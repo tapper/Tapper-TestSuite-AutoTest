@@ -14,4 +14,3 @@ my $wrapper = Tapper::TestSuite::AutoTest->new();
 my $args = $wrapper->parse_args();
 $args = $wrapper->install($args);
 $args = $wrapper->run($args);
-$args = $wrapper->send_results($args);
