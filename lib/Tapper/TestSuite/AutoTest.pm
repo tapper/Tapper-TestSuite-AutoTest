@@ -6,6 +6,12 @@ use strict;
 use Moose;
 use Getopt::Long qw/GetOptions/;
 use File::ShareDir 'module_dir';
+use Sys::Hostname qw/hostname/;
+use YAML::Syck;
+use Archive::Tar;
+use IO::Socket::INET;
+
+
 extends 'Tapper::Base';
 
 =head1 NAME
@@ -51,6 +57,7 @@ sub install
 
         $self->makedir($target);
         my ($error) = $self->log_and_exec("cp","-r",module_dir(__PACKAGE__)."/autotest", $target);
+        $args->{target} .= '/autotest';
         return $args;
 }
 
@@ -71,6 +78,41 @@ sub send_results
         my $report;
 
 
+        my $tar  = Archive::Tar->new;
+        my $result_dir = $args->{target}."/results/default/";
+        my $hostname = hostname();
+        my $report_meta = "
+Version 13
+1..1
+# Tapper-Suite-Name: Tapper-TestSuite-AutoTest
+# Tapper-Machine-Name: $hostname
+# Tapper-Suite-Version: 3.000001
+ok 1 - Getting hardware information
+";
+
+        my $meta = YAML::Syck::LoadFile("$result_dir/meta.yml");
+        push @{$meta->{file_order}}, 'tapper-suite-meta.tap';
+        $tar->read("$result_dir/tap.tar.gz");
+        $tar->replace_content( 'meta.yml', YAML::Syck::Dump($meta) );
+        $tar->add_data('tapper-suite-meta.tap',$report_meta);
+        $tar->write("$result_dir/tap.tar.gz", COMPRESS_GZIP);
+
+        my $gzipped_content;
+        {
+                open my $fh, "<", "$result_dir/tap.tar.gz";
+                local $/;
+                $gzipped_content = <$fh>;
+                close $fh;
+        }
+
+
+        my $sock = IO::Socket::INET->new(PeerAddr => $args->{report_server},
+                                         PeerPort => $args->{report_port},
+                                         Proto    => 'tcp');
+        unless ($sock) { die "Can't open connection to ", $args->{report_server}, ":$!" }
+
+        $sock->print($gzipped_content);
+        $sock->close();
         return $args;
 }
 
@@ -90,8 +132,14 @@ sub parse_args
         GetOptions ("test|t=s"  => \@tests,
                     "directory|d=s" => \$dir,
                    );
-        my $args = {subtests => \@tests,
-                    target   => $dir,
+
+
+
+        my $args = {subtests        => \@tests,
+                    target          => $dir,
+                    report_server   => $ENV{TAPPER_REPORT_SERVER}   || 'tapper',
+                    report_api_port => $ENV{TAPPER_REPORT_API_PORT} || 7358,
+                    report_port     => $ENV{TAPPER_REPORT_PORT}     || 7357,
                    };
 
         return $args;
@@ -113,16 +161,14 @@ them.
 sub run
 {
         my ($self, $args) = @_;
-        my $target = $args->{target}.'/autotest';
+        my $target = $args->{target};
         my $autotest = "$target/bin/autotest";
 
         foreach my $test (@{$args->{subtests} || [] }) {
                 my $test_path = "$target/tests/$test/control";
                 $self->log_and_exec($autotest, "--tap", $test_path);
         }
-        $self->send_results();
-
-        return;
+        return $args;
 }
 
 
