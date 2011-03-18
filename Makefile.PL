@@ -18,6 +18,7 @@ requires 'Sys::Hostname';
 requires 'YAML::Syck';
 requires 'Archive::Tar';
 requires 'IO::Socket::INET';
+requires 'File::Slurp';
 
 auto_install;
 
