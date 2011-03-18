@@ -1,42 +1,53 @@
 NAME
-    TestSuite::AutoTestWrapper - Wrap autotest for reporting in Tapper!
+    Tapper::TestSuite::AutoTest - Tapper - Complete OS testing in a box via
+    autotest
 
 SYNOPSIS
     This module wraps autotest to make its (sub) tests available for Tapper.
 
-        use TestSuite::AutoTestWrapper;
+        use Tapper::TestSuite::AutoTest;
 
-        my $wrapper = TestSuite::AutoTestWrapper->new();
+        my $wrapper = Tapper::TestSuite::AutoTest->new();
         my $args    = $wrapper->parse_args();
         $args       = $wrapper->install($args);
         $args       = $wrapper->run($args);
-        $args       = $wrapper->send_results($args);
 
 FUNCTIONS
   install
-
     Install the autotest framework into the given targe
 
     @param hash ref - args
 
     @return hash ref - args
 
-  send_results
+  report_away
+    Send the actual report to reports receiver framework.
 
+    @param hash ref - args
+
+    @return success - int - report id @return error - die()
+
+  upload_stats
+    Upload the stats file to reports framework.
+
+    @param int - report id @param hash ref - args
+
+  send_results
     Send the test results to Tapper.
 
     @param hash ref - args
 
     @return hash ref - args
 
-  parse_args
+  print_help
+    Print help and die.
 
+  parse_args
     Parse command line arguments and Tapper ENV variables.
 
     @return hash ref - args
 
   run
-
     Run the requested autotest test(s), collect their results and report
     them.
 
@@ -63,7 +74,7 @@ SUPPORT
         http://rt.cpan.org/NoAuth/Bugs.html?Dist=Tapper-TestSuite-AutoTest
 
     * AnnoCPAN: Annotated CPAN documentation
-        http://annocpan.org/dist/TestSuite-AutoTestWrapper
+        http://annocpan.org/dist/Tapper-TestSuite-AutoTest
 
     * CPAN Ratings
         http://cpanratings.perl.org/d/Tapper-TestSuite-AutoTest
