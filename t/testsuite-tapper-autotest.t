@@ -27,7 +27,7 @@ isa_ok($wrapper, 'Tapper::TestSuite::AutoTest');
 my $args;
 @ARGV=('--test', 'first','-t','second','-t','third', '-d', $dir);
 $args = $wrapper->parse_args();
-is_deeply($args, {
+cmp_deeply($args, superhashof{
           'target' => $dir,
           'subtests' => [
                           'first',
