@@ -17,7 +17,7 @@ extends 'Tapper::Base';
 
 =head1 NAME
 
-TestSuite::AutoTestWrapper - Wrap autotest for reporting in Tapper!
+Tapper::TestSuite::AutoTest - Tapper - Complete OS testing in a box via autotest
 
 =cut
 
@@ -28,9 +28,9 @@ our $VERSION = '3.000001';
 
 This module wraps autotest to make its (sub) tests available for Tapper.
 
-    use TestSuite::AutoTestWrapper;
+    use Tapper::TestSuite::AutoTest;
 
-    my $wrapper = TestSuite::AutoTestWrapper->new();
+    my $wrapper = Tapper::TestSuite::AutoTest->new();
     my $args    = $wrapper->parse_args();
     $args       = $wrapper->install($args);
     $args       = $wrapper->run($args);
@@ -297,7 +297,7 @@ L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Tapper-TestSuite-AutoTest>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/TestSuite-AutoTestWrapper>
+L<http://annocpan.org/dist/Tapper-TestSuite-AutoTest>
 
 =item * CPAN Ratings
 
@@ -323,4 +323,4 @@ This program is released under the following license: freebsd
 
 =cut
 
-1; # End of TestSuite::AutoTestWrapper
+1; # End of Tapper::TestSuite::AutoTest
