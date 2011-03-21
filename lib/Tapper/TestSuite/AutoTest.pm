@@ -11,7 +11,7 @@ use YAML::Syck;
 use Archive::Tar;
 use IO::Socket::INET;
 use File::Slurp qw/slurp/;
-use File::Temp qw/tempdir/;
+#use File::Temp qw/tempdir/;
 
 extends 'Tapper::Base';
 
@@ -41,7 +41,7 @@ This module wraps autotest to make its (sub) tests available for Tapper.
 
 =head2 install
 
-Install the autotest framework into the given targe
+Install the autotest framework from a given source into a given target
 
 @param hash ref - args
 
@@ -52,18 +52,24 @@ Install the autotest framework into the given targe
 sub install
 {
         my ($self, $args) = @_;
-        $args->{target} = '/tmp/tapper-testsuite-autotest-mirror/' if not $args->{target};
-        $self->makedir($args->{target});
 
+        $args->{target} = '/tmp/tapper-testsuite-autotest-mirror/' if not $args->{target};
         my $target = $args->{target};
-        
+
+        my $downloaddir = "/tmp/";
+        $self->makedir($target);
+
         if (! -e "$target/LICENSE") {
                 if ($args->{source} =~ m|http://github.com/|) {
-                        my ($error, $output) = $self->log_and_exec('wget', $args->{source}, "--no-check-certificate","-O",$args->{target}."/autotest.tgz");
-                        die $output if $error;
-                        
-                        ($error, $output)    = $self->log_and_exec("tar","-xzf",$args->{target}."/autotest.tgz","-C",$args->{target});
-                        ($error, $output)    = $self->log_and_exec("mv","$target/autotest-autotest-*/client/*", "$target/");
+                        my $downloadfile = "$downloaddir/autotest-from-github.tgz";
+                        my ($error, $output);
+                        if (! -e $downloadfile) {
+                                ($error, $output) = $self->log_and_exec('wget', $args->{source}, "--no-check-certificate", "-O", $downloadfile);
+                                die $output if $error;
+                        }
+                        ($error, $output) = $self->log_and_exec("tar", "-xzf", $downloaddir, "-C", $target);
+                        die $output if $error;                        
+                        ($error, $output) = $self->log_and_exec("mv","$downloaddir/*-autotest-*/client/*", "$target/");
                         die $output if $error;                        
                 }
          }
