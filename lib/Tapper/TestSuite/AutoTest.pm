@@ -6,12 +6,12 @@ use 5.010;
 
 use Moose;
 use Getopt::Long qw/GetOptions/;
-use File::ShareDir 'module_dir';
 use Sys::Hostname qw/hostname/;
 use YAML::Syck;
 use Archive::Tar;
 use IO::Socket::INET;
 use File::Slurp qw/slurp/;
+use File::Temp qw/tempdir/;
 
 extends 'Tapper::Base';
 
@@ -52,12 +52,22 @@ Install the autotest framework into the given targe
 sub install
 {
         my ($self, $args) = @_;
-        $args->{target} = '/usr/local/' if not $args->{target};
-        my $target = $args->{target};
+        $args->{target} = '/tmp/tapper-testsuite-autotest-mirror/' if not $args->{target};
+        $self->makedir($args->{target});
 
-        $self->makedir($target);
-        my ($error) = $self->log_and_exec("cp","-r",module_dir(__PACKAGE__)."/autotest", $target);
-        $args->{target} .= '/autotest';
+        my $target = $args->{target};
+        
+        if (! -e "$target/LICENSE") {
+                if ($args->{source} =~ m|http://github.com/|) {
+                        my ($error, $output) = $self->log_and_exec('wget', $args->{source}, "--no-check-certificate","-O",$args->{target}."/autotest.tgz");
+                        die $output if $error;
+                        
+                        ($error, $output)    = $self->log_and_exec("tar","-xzf",$args->{target}."/autotest.tgz","-C",$args->{target});
+                        ($error, $output)    = $self->log_and_exec("mv","$target/autotest-autotest-*/client/*", "$target/");
+                        die $output if $error;                        
+                }
+         }
+
         return $args;
 }
 
@@ -113,7 +123,7 @@ sub upload_stats
 
 
         my $sock = IO::Socket::INET->new(PeerAddr => $args->{report_server},
-                                         PeerPort => $args->{report_port},
+                                         PeerPort => $args->{report_api_port},
                                          Proto    => 'tcp');
         unless ($sock) { die "Can't open connection to ", $args->{report_server}, ":$!" }
 
@@ -149,27 +159,27 @@ sub send_results
         my $report_group    = $args->{report_group};
 
         my $report_meta = "
-Version 13
-1..1
-# Tapper-Suite-Name: Autotest-$test
-# Tapper-Machine-Name: $hostname
-# Tapper-Suite-Version: $VERSION
-ok 1 - Tapper metainfo
-";
+          Version 13
+            1..1
+              # Tapper-Suite-Name: Autotest-$test
+              # Tapper-Machine-Name: $hostname
+              # Tapper-Suite-Version: $VERSION
+              ok 1 - Tapper metainfo
+                ";
         $report_meta .= $testrun_id   ? "# Tapper-Reportgroup-Testrun: $testrun_id\n"     : '';
-        $report_meta .= $report_group ? "# Tapper-Reportgroup-Arbitrary: $report_group\n" : '';
+                $report_meta .= $report_group ? "# Tapper-Reportgroup-Arbitrary: $report_group\n" : '';
 
-        my $meta = YAML::Syck::LoadFile("$result_dir/meta.yml");
-        push @{$meta->{file_order}}, 'tapper-suite-meta.tap';
-        $tar->read("$result_dir/tap.tar.gz");
-        $tar->replace_content( 'meta.yml', YAML::Syck::Dump($meta) );
-        $tar->add_data('tapper-suite-meta.tap',$report_meta);
-        $tar->write("$result_dir/tap.tar.gz", COMPRESS_GZIP);
+                my $meta = YAML::Syck::LoadFile("$result_dir/meta.yml");
+                push @{$meta->{file_order}}, 'tapper-suite-meta.tap';
+                $tar->read("$result_dir/tap.tar.gz");
+                $tar->replace_content( 'meta.yml', YAML::Syck::Dump($meta) );
+                $tar->add_data('tapper-suite-meta.tap',$report_meta);
+                $tar->write("$result_dir/tap.tar.gz", COMPRESS_GZIP);
 
-        my $report_id = $self->report_away($args);
-        $self->upload_stats($report_id);
-        return $args;
-}
+                my $report_id = $self->report_away($args);
+                $self->upload_stats($report_id, $args);
+                return $args;
+        }
 
 
 =head2 print_help
@@ -184,6 +194,7 @@ sub print_help
         say "$0 --test=s@ [ --directory=s ] [--remote-name]";
         say "\t--test|t\t\tName of a subtest, REQUIRED, may be given multple times";
         say "\t--directory|d\t\tDirectory to copy autotest to";
+        say "\t--source_url|s\t\tURL to get autotest from";
         say "\t--remote-name|O\t\tPrint out the name of result files";
         say "\t--help|h\t\tPrint this help text and exit";
 
@@ -203,11 +214,12 @@ sub parse_args
 {
         my ($self) = @_;
         my @tests;
-        my ($dir, $remote_name, $help);
+        my ($dir, $remote_name, $help, $source);
 
         GetOptions ("test|t=s"  => \@tests,
                     "directory|d=s" => \$dir,
                     "remote-name|O" => \$remote_name,
+                    "source_url|s"  => \$source,
                     "help|h"        => \$help,
                    );
         $self->print_help() if $help;
@@ -218,6 +230,7 @@ sub parse_args
 
         my $args = {subtests        => \@tests,
                     target          => $dir,
+                    source          => $source || 'http://github.com/renormalist/autotest/tarball/master',
                     report_server   => $ENV{TAPPER_REPORT_SERVER}   || 'tapper',
                     report_api_port => $ENV{TAPPER_REPORT_API_PORT} || 7358,
                     report_port     => $ENV{TAPPER_REPORT_PORT}     || 7357,
