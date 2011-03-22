@@ -73,9 +73,9 @@ sub install
                                                                 "-xzf", $downloadfile,
                                                                 "-C", $downloaddir);
                         die $output if $error;
-                        ($error, $output) = $self->log_and_exec("mv",
-                                                                "-f",
-                                                                "$downloaddir/*-autotest-*/client/*",
+                        ($error, $output) = $self->log_and_exec("rsync",
+                                                                "-a",
+                                                                "$downloaddir/*-autotest-*/client/",
                                                                 "$target/");
                         die $output if $error;
                 }

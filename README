@@ -1,92 +1,33 @@
-NAME
-    Tapper::TestSuite::AutoTest - Tapper - Complete OS testing in a box via
-    autotest
+Tapper-TestSuite-AutoTest
+=========================
 
-SYNOPSIS
-    This module wraps autotest to make its (sub) tests available for Tapper.
+Complete OS testing in a box via autotest
 
-        use Tapper::TestSuite::AutoTest;
 
-        my $wrapper = Tapper::TestSuite::AutoTest->new();
-        my $args    = $wrapper->parse_args();
-        $args       = $wrapper->install($args);
-        $args       = $wrapper->run($args);
+About Tapper 
+============
 
-FUNCTIONS
-  install
-    Install the autotest framework into the given targe
+Tapper is an infrastructure for all aspects of testing 
+inclusive Operating Systems and Virtualization.
 
-    @param hash ref - args
+Tapper contains
 
-    @return hash ref - args
+ - Automation
+ - Machine Scheduling
+ - Command line utils
+ - Web Frontend application
+ - Support for writing tests
+ - Powerful result evaluation API
+ - Testplan support with TaskJuggler
+ - Many use-cases from tracking test results to
+   benchmarking to full OS testing including virtualization
 
-  report_away
-    Send the actual report to reports receiver framework.
+More information about Tapper:
 
-    @param hash ref - args
+ - https://github.com/amd/Tapper-Doc/
+ - http://search.cpan.org/~amd/Tapper-Doc/
 
-    @return success - int - report id @return error - die()
+Other Tapper subprojects:
 
-  upload_stats
-    Upload the stats file to reports framework.
-
-    @param int - report id @param hash ref - args
-
-  send_results
-    Send the test results to Tapper.
-
-    @param hash ref - args
-
-    @return hash ref - args
-
-  print_help
-    Print help and die.
-
-  parse_args
-    Parse command line arguments and Tapper ENV variables.
-
-    @return hash ref - args
-
-  run
-    Run the requested autotest test(s), collect their results and report
-    them.
-
-    @param hash ref - args
-
-    @return hash ref - args
-
-BUGS
-    Please report any bugs or feature requests to
-    `bug-tapper-testsuite-autotest at rt.cpan.org', or through the web
-    interface at
-    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Tapper-TestSuite-AutoTest
-    . I will be notified, and then you'll automatically be notified of
-    progress on your bug as I make changes.
-
-SUPPORT
-    You can find documentation for this module with the perldoc command.
-
-        perldoc Tapper::TestSuite::AutoTest
-
-    You can also look for information at:
-
-    * RT: CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Tapper-TestSuite-AutoTest
-
-    * AnnoCPAN: Annotated CPAN documentation
-        http://annocpan.org/dist/Tapper-TestSuite-AutoTest
-
-    * CPAN Ratings
-        http://cpanratings.perl.org/d/Tapper-TestSuite-AutoTest
-
-    * Search CPAN
-        http://search.cpan.org/dist/Tapper-TestSuite-AutoTest/
-
-AUTHOR
-    AMD OSRC Tapper Team, `<tapper at amd64.org>'
-
-COPYRIGHT & LICENSE
-    Copyright 2008-2011 AMD OSRC Tapper Team, all rights reserved.
-
-    This program is released under the following license: freebsd
-
+ - https://github.com/amd
+ - http://search.cpan.org/~amd
