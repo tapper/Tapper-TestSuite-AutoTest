@@ -15,18 +15,34 @@ use File::Spec::Functions 'tmpdir';
 
 extends 'Tapper::Base';
 
+our $VERSION = '3.000001';
+
+
 =head1 NAME
 
 Tapper::TestSuite::AutoTest - Tapper - Complete OS testing in a box via autotest
 
-=cut
-
-our $VERSION = '3.000001';
-
-
 =head1 SYNOPSIS
 
+You most likely want to run the frontend cmdline tool like this
+
+=over 4
+
+=item * Run an autotest subtest and report results to Tapper:
+
+  $ tapper-testsuite-autotest -t hackbench
+
+=item * Run multiple autotest subtests and report results to Tapper:
+
+  $ tapper-testsuite-autotest -t hackbench -t hwclock
+
+=back
+
+=head1 ABOUT
+
 This module wraps autotest to make its (sub) tests available for Tapper.
+
+The commandline tool simply calls the single steps like this:
 
     use Tapper::TestSuite::AutoTest;
 
@@ -35,9 +51,23 @@ This module wraps autotest to make its (sub) tests available for Tapper.
     $args       = $wrapper->install($args);
     $args       = $wrapper->run($args);
 
+The reporting evaluates several environment variables:
+
+  TAPPER_REPORT_SERVER
+  TAPPER_REPORT_API_PORT
+  TAPPER_REPORT_PORT
+  TAPPER_TESTRUN
+  TAPPER_REPORT_GROUP
+
+with some sensible defaults. They are automatically provided when
+using Tapper automation. 
+
+In case you run it manually the most important variable is
+C<TAPPER_REPORT_SERVER> pointing to your central Tapper server.
+
+See the Tapper manual for more details.
 
 =head1 FUNCTIONS
-
 
 =head2 install
 
