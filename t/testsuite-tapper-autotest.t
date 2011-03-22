@@ -37,6 +37,6 @@ cmp_deeply($args, superhashof {
         }, 'Parse args');
 
 $wrapper->install($args);
-ok(-d "$dir/LICENSE", 'Test suite installation');
+ok(-e "$dir/LICENSE", 'Test suite installation');
 
 done_testing();

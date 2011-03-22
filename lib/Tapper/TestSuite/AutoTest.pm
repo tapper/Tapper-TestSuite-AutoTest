@@ -67,10 +67,10 @@ sub install
                                 ($error, $output) = $self->log_and_exec('wget', $args->{source}, "--no-check-certificate", "-O", $downloadfile);
                                 die $output if $error;
                         }
-                        ($error, $output) = $self->log_and_exec("tar", "-xzf", $downloaddir, "-C", $target);
-                        die $output if $error;                        
-                        ($error, $output) = $self->log_and_exec("mv","$downloaddir/*-autotest-*/client/*", "$target/");
-                        die $output if $error;                        
+                        ($error, $output) = $self->log_and_exec("tar", "-xzf", $downloadfile, "-C", $target);
+                        die $output if $error;
+                        ($error, $output) = $self->log_and_exec("mv","$target/*-autotest-*/client/*", "$target/");
+                        die $output if $error;
                 }
          }
 
