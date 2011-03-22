@@ -2,7 +2,7 @@ use Test::More;
 
 use warnings;
 use strict;
-#use File::Temp qw/ tempdir /;
+use File::Spec::Functions 'tmpdir';
 use Test::Deep;
 
 use_ok('Tapper::TestSuite::AutoTest');
@@ -18,25 +18,23 @@ log4perl.appender.root                            = Log::Log4perl::Appender::Scr
 log4perl.appender.root.layout                     = SimpleLayout";
 Log::Log4perl->init(\$string);
 
-
-#my $dir = tempdir( CLEANUP => 0 );
-my $dir = '/tmp/tapper-testsuite-autotest-mirror/';
+my $dir = tmpdir.'/tapper-testsuite-autotest-mirror/';
 
 my $wrapper = Tapper::TestSuite::AutoTest->new();
 isa_ok($wrapper, 'Tapper::TestSuite::AutoTest');
 my $args;
-@ARGV=('--test', 'first','-t','second','-t','third'); #, '-d', $dir);
+@ARGV=('--test', 'first','-t','second','-t','third', '-d', $dir);
 $args = $wrapper->parse_args();
-cmp_deeply($args, superhashof {
-          #'target' => $dir,
+cmp_deeply($args, superhashof({
+          'target' => $dir,
           'subtests' => [
                           'first',
                           'second',
-                          'third'
+                          'third',
                         ]
-        }, 'Parse args');
+        }), 'Parse args');
 
 $wrapper->install($args);
-ok(-d "$dir/LICENSE", 'Test suite installation');
+ok((-d "$dir/tests" ? 1 : 0), 'Test suite installation');
 
 done_testing();

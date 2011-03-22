@@ -13,6 +13,7 @@ build_requires 'Test::Deep';
 requires 'Moose';
 requires 'Getopt::Long';
 requires 'File::ShareDir';
+requires 'File::Spec::Functions';
 requires 'Tapper::Base';
 requires 'Sys::Hostname';
 requires 'YAML::Syck';
