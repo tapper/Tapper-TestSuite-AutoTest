@@ -232,7 +232,7 @@ sub parse_args
         GetOptions ("test|t=s"  => \@tests,
                     "directory|d=s" => \$dir,
                     "remote-name|O" => \$remote_name,
-                    "source_url|s"  => \$source,
+                    "source_url|s=s"  => \$source,
                     "help|h"        => \$help,
                    );
         $self->print_help() if $help;
