@@ -171,13 +171,12 @@ sub send_results
 
         my $report_group    = $args->{report_group};
 
-        my $report_meta = "
-          Version 13
-            1..1
-              # Tapper-Suite-Name: Autotest-$test
-              # Tapper-Machine-Name: $hostname
-              # Tapper-Suite-Version: $VERSION
-              ok 1 - Tapper metainfo
+        my $report_meta = "Version 13
+1..1
+# Tapper-Suite-Name: Autotest-$test
+# Tapper-Machine-Name: $hostname
+# Tapper-Suite-Version: $VERSION
+ok 1 - Tapper metainfo
                 ";
         $report_meta .= $testrun_id   ? "# Tapper-Reportgroup-Testrun: $testrun_id\n"     : '';
                 $report_meta .= $report_group ? "# Tapper-Reportgroup-Arbitrary: $report_group\n" : '';
