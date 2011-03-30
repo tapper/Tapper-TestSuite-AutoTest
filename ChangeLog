@@ -1,8 +1,11 @@
-2011-03-28  Steffen Schwigon  <steffen.schwigon@amd.com>
+2011-03-30 Steffen Schwigon <steffen.schwigon@amd.com>
 
 	* v3.0.2
 
-	* utils get rewritten shebang line
+	* rewritable shebang line
+	* polish docs
+	* [FIX] TAP for suite meta info
+	* [FIX] source_url parameter expects a value now
 
 2011-03-22 Steffen Schwigon <steffen.schwigon@amd.com>
 
