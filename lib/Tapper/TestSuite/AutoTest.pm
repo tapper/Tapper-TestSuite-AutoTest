@@ -69,6 +69,36 @@ See the Tapper manual for more details.
 
 =head1 FUNCTIONS
 
+=head2 copy_client
+
+Move the client to where it belongs.
+
+@param string - download directory
+@param string - target directory
+
+@return die() in case of error
+
+=cut
+
+sub copy_client
+{
+        my($self, $downloaddir, $target) = @_;
+        my ($error, $output);
+        `which rsynch`;
+        if ( $? != 0)  {
+                ($error, $output) = $self->log_and_exec("rsync",
+                                                        "-a",
+                                                        "$downloaddir/*-autotest-*/client/",
+                                                        "$target/");
+        } else {
+                die "Target dir '$target' does not exist\n" if not -d $target;
+                ($error, $output) = $self->log_and_exec("cp","-r","$downloaddir/*-autotest-*/client/*","$target/");
+        }
+        die $output if $error;
+        return;
+}
+
+
 =head2 install
 
 Install the autotest framework from a given source into a given target
@@ -103,14 +133,11 @@ sub install
                                                                 "-xzf", $downloadfile,
                                                                 "-C", $downloaddir);
                         die $output if $error;
-                        ($error, $output) = $self->log_and_exec("rsync",
-                                                                "-a",
-                                                                "$downloaddir/*-autotest-*/client/",
-                                                                "$target/");
+                        $self->copy_client($downloaddir, $target);
                         die $output if $error;
                 }
          }
-
+        $args->{target} = $target;
         return $args;
 }
 
