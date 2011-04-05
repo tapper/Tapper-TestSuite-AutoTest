@@ -85,7 +85,7 @@ sub copy_client
         my($self, $downloaddir, $target) = @_;
         my ($error, $output);
         `which rsynch`;
-        if ( $? != 0)  {
+        if ( $? == 0)  {
                 ($error, $output) = $self->log_and_exec("rsync",
                                                         "-a",
                                                         "$downloaddir/*-autotest-*/client/",
@@ -234,21 +234,21 @@ sub send_results
 # Tapper-Machine-Name: $hostname
 # Tapper-Suite-Version: $VERSION
 ok 1 - Tapper metainfo
-                ";
+";
         $report_meta .= $testrun_id   ? "# Tapper-Reportgroup-Testrun: $testrun_id\n"     : '';
-                $report_meta .= $report_group ? "# Tapper-Reportgroup-Arbitrary: $report_group\n" : '';
+        $report_meta .= $report_group ? "# Tapper-Reportgroup-Arbitrary: $report_group\n" : '';
 
-                my $meta = YAML::Syck::LoadFile("$result_dir/meta.yml");
-                push @{$meta->{file_order}}, 'tapper-suite-meta.tap';
-                $tar->read("$result_dir/tap.tar.gz");
-                $tar->replace_content( 'meta.yml', YAML::Syck::Dump($meta) );
-                $tar->add_data('tapper-suite-meta.tap',$report_meta);
-                $tar->write("$result_dir/tap.tar.gz", COMPRESS_GZIP);
+        my $meta = YAML::Syck::LoadFile("$result_dir/meta.yml");
+        push @{$meta->{file_order}}, 'tapper-suite-meta.tap';
+        $tar->read("$result_dir/tap.tar.gz");
+        $tar->replace_content( 'meta.yml', YAML::Syck::Dump($meta) );
+        $tar->add_data('tapper-suite-meta.tap',$report_meta);
+        $tar->write("$result_dir/tap.tar.gz", COMPRESS_GZIP);
 
-                my $report_id = $self->report_away($args);
-                $self->upload_stats($report_id, $args);
-                return $args;
-        }
+        my $report_id = $self->report_away($args);
+        $self->upload_stats($report_id, $args);
+        return $args;
+}
 
 
 =head2 print_help
