@@ -14,7 +14,7 @@ requires 'Moose';
 requires 'Getopt::Long';
 requires 'File::ShareDir';
 requires 'File::Spec::Functions';
-requires 'Tapper::Base' => 3.000010";
+requires 'Tapper::Base' => "3.000010";
 requires 'Sys::Hostname';
 requires 'YAML::Syck';
 requires 'Archive::Tar';
