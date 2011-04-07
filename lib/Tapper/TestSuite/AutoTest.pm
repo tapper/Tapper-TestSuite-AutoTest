@@ -15,7 +15,7 @@ use File::Spec::Functions 'tmpdir';
 
 extends 'Tapper::Base';
 
-our $VERSION = '3.000002';
+our $VERSION = '3.000010';
 
 
 =head1 NAME
