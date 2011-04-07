@@ -84,7 +84,7 @@ sub copy_client
 {
         my($self, $downloaddir, $target) = @_;
         my ($error, $output);
-        `which rsynch`;
+        `which rsync`;
         if ( $? == 0)  {
                 ($error, $output) = $self->log_and_exec("rsync",
                                                         "-a",
