@@ -1,11 +1,13 @@
-2011-03-30 Steffen Schwigon <steffen.schwigon@amd.com>
+2011-04-07  Steffen Schwigon  <steffen.schwigon@amd.com>
 
-	* v3.0.2
+	* v3.0.10
 
 	* rewritable shebang line
 	* polish docs
 	* [FIX] TAP for suite meta info
 	* [FIX] source_url parameter expects a value now
+	* alernative cp when rsync not available
+	* release version++ roundhouse kick
 
 2011-03-22 Steffen Schwigon <steffen.schwigon@amd.com>
 
