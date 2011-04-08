@@ -17,7 +17,7 @@ requires 'File::Spec::Functions';
 requires 'Tapper::Base' => "3.000010";
 requires 'Sys::Hostname';
 requires 'YAML::Syck';
-requires 'Archive::Tar';
+requires 'Archive::Tar' => "1.76";
 requires 'IO::Socket::INET';
 requires 'File::Slurp';
 
