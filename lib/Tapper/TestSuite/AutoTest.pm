@@ -121,22 +121,28 @@ sub install
         my $downloaddir = "/tmp/";
         $self->makedir($target);
 
+        my $downloadfile;
         if (! -d "$target/tests") {
-                if ($source =~ m|github.com/.*tarball|) {
-                        my $downloadfile = "$downloaddir/autotest-from-github.tgz";
+                if ($source =~ m,^(http|ftp)://, ) {
+                        $downloadfile = "$downloaddir/autotest-from-github.tgz";
                         if (! -e $downloadfile) {
                                 ($error, $output) = $self->log_and_exec('wget', "--no-check-certificate",
                                                                         $source, "-O", $downloadfile);
                                 die $output if $error;
                         }
-                        ($error, $output) = $self->log_and_exec("tar",
-                                                                "-xzf", $downloadfile,
-                                                                "-C", $downloaddir);
-                        die $output if $error;
-                        $self->copy_client($downloaddir, $target);
-                        die $output if $error;
+                } elsif ($source =~ m,^file://,) {
+                        $downloadfile = $source;
+                        $downloadfile =~ s,^file://,,;
+                } else {
+                        $downloadfile = $source;
                 }
-         }
+                ($error, $output) = $self->log_and_exec("tar",
+                                                        "-xzf", $downloadfile,
+                                                        "-C", $downloaddir);
+                die $output if $error;
+                $self->copy_client($downloaddir, $target);
+                die $output if $error;
+        }
         $args->{target} = $target;
         return $args;
 }
