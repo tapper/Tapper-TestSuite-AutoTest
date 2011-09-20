@@ -126,6 +126,7 @@ sub install
                 if ($source =~ m,^(http|ftp)://, ) {
                         $downloadfile = "$downloaddir/autotest-from-github.tgz";
                         if (! -e $downloadfile) {
+                                $self->log->debug( "Download autotest from $source to $downloadfile");
                                 ($error, $output) = $self->log_and_exec('wget', "--no-check-certificate",
                                                                         $source, "-O", $downloadfile);
                                 die $output if $error;
@@ -136,6 +137,7 @@ sub install
                 } else {
                         $downloadfile = $source;
                 }
+                $self->log->debug( "Unpack autotest from file $downloadfile to subdir $downloaddir");
                 ($error, $output) = $self->log_and_exec("tar",
                                                         "-xzf", $downloadfile,
                                                         "-C", $downloaddir);
@@ -168,7 +170,10 @@ sub report_away
         my $sock = IO::Socket::INET->new(PeerAddr => $args->{report_server},
                                          PeerPort => $args->{report_port},
                                          Proto    => 'tcp');
-        unless ($sock) { die "Can't open connection to ", $args->{report_server}, ":$!" }
+        unless ($sock) {
+                $self->log->error( "Result TAP in $result_dir/tap.tar.gz can not be sent to Tapper server.");
+                die "Can't open connection to ", ($args->{report_server} // "report_server=UNDEF"), ":$!"
+        }
 
         my $report_id = <$sock>;
         ($report_id) = $report_id =~ /(\d+)$/;
