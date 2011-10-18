@@ -170,9 +170,10 @@ sub report_away
         my $sock = IO::Socket::INET->new(PeerAddr => $args->{report_server},
                                          PeerPort => $args->{report_port},
                                          Proto    => 'tcp');
+        $self->log->debug("Report to ".($args->{report_server} // "report_server=UNDEF").":".($args->{report_port} // "report_port=UNDEF"));
         unless ($sock) {
                 $self->log->error( "Result TAP in $result_dir/tap.tar.gz can not be sent to Tapper server.");
-                die "Can't open connection to ", ($args->{report_server} // "report_server=UNDEF"), ":$!"
+                die "Can't open connection to ", ($args->{report_server} // "report_server=UNDEF"), ":", ($args->{report_port} // "report_port=UNDEF"), ":$!"
         }
 
         my $report_id = <$sock>;
@@ -195,18 +196,22 @@ sub upload_stats
 {
         my ($self, $report_id, $args) = @_;
 
-        my $host = $args->{reportserver};
-        my $port = $args->{reportport};
-
-        my $file    = $args->{result_dir}."/status";
-        my $cmdline = "#! upload $report_id status plain\n";
-        my $content = slurp($file);
+        my $host       = $args->{reportserver};
+        my $port       = $args->{reportport};
+        my $result_dir = $args->{result_dir};
+        my $file       = "$result_dir/status";
+        my $cmdline    = "#! upload $report_id status plain\n";
+        my $content    = slurp($file);
 
 
         my $sock = IO::Socket::INET->new(PeerAddr => $args->{report_server},
                                          PeerPort => $args->{report_api_port},
                                          Proto    => 'tcp');
-        unless ($sock) { die "Can't open connection to ", $args->{report_server}, ":$!" }
+        $self->log->debug("Upload to ".($args->{report_server} // "report_server=UNDEF").":".($args->{report_api_port} // "report_api_port=UNDEF"));
+        unless ($sock) {
+                $self->log->error( "Result TAP in $result_dir/tap.tar.gz can not be sent to Tapper server.");
+                die "Can't open connection to ", ($args->{report_server} // "report_server=UNDEF"), ":", ($args->{report_api_port} // "report_api_port=UNDEF"), ":$!"
+        }
 
         $sock->print($cmdline);
         $sock->print($content);
