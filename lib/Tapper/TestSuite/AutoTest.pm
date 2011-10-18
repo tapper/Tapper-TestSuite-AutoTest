@@ -249,7 +249,14 @@ ok 1 - Tapper metainfo
         $report_meta .= $testrun_id   ? "# Tapper-Reportgroup-Testrun: $testrun_id\n"     : '';
         $report_meta .= $report_group ? "# Tapper-Reportgroup-Arbitrary: $report_group\n" : '';
 
-        my $meta = YAML::Syck::LoadFile("$result_dir/meta.yml");
+        my $meta;
+        eval { $meta = YAML::Syck::LoadFile("$result_dir/meta.yml") };
+        if ($@) {
+                $meta = {};
+                $report_meta .= "# Error loading $result_dir/meta.yml: $@\n";
+                $report_meta .= "# Files in $result_dir\n";
+                $report_meta .= $_ foreach map { "#   ".$_ } `find $result_dir`;
+        }
         push @{$meta->{file_order}}, 'tapper-suite-meta.tap';
         $tar->read("$result_dir/tap.tar.gz");
         $tar->replace_content( 'meta.yml', YAML::Syck::Dump($meta) );
