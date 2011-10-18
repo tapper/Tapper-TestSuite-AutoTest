@@ -115,7 +115,7 @@ sub install
         my $error;
         my $output;
 
-        my $target = $args->{target} || tmpdir.'/tapper-testsuite-autotest-mirror/';
+        my $target = $args->{target} || tmpdir.'/tapper-testsuite-autotest-mirror';
         my $source = $args->{source};
 
         my $downloaddir = "/tmp/";
