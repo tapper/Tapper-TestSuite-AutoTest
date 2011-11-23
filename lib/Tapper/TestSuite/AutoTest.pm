@@ -12,6 +12,7 @@ use Archive::Tar;
 use IO::Socket::INET;
 use File::Slurp qw/slurp/;
 use File::Spec::Functions 'tmpdir';
+use Digest::MD5 'md5_hex';
 
 extends 'Tapper::Base';
 
@@ -88,7 +89,7 @@ sub copy_client
         if ( $? == 0)  {
                 ($error, $output) = $self->log_and_exec("rsync",
                                                         "-a",
-                                                        "$downloaddir/*-autotest-*/client/",
+                                                        "$downloaddir/*autotest*/client/",
                                                         "$target/");
         } else {
                 die "Target dir '$target' does not exist\n" if not -d $target;
@@ -115,16 +116,19 @@ sub install
         my $error;
         my $output;
 
-        my $target = $args->{target} || tmpdir.'/tapper-testsuite-autotest-mirror';
-        my $source = $args->{source};
+        my $tmp = tmpdir;
+        my $source   = $args->{source};
+        my $checksum = md5_hex($source);
+        my $target   = $args->{target} || "$tmp/tapper-testsuite-autotest-client-$checksum";
+        my $downloaddir = "$tmp/tapper-testsuite-autotest-mirror-$checksum";
 
-        my $downloaddir = "/tmp/";
         $self->makedir($target);
+        $self->makedir($downloaddir);
 
         my $downloadfile;
         if (! -d "$target/tests") {
                 if ($source =~ m,^(http|ftp)://, ) {
-                        $downloadfile = "$downloaddir/autotest-from-github.tgz";
+                        $downloadfile = "$downloaddir/autotest-download-$checksum.tgz";
                         if (! -e $downloadfile) {
                                 $self->log->debug( "Download autotest from $source to $downloadfile");
                                 ($error, $output) = $self->log_and_exec('wget', "--no-check-certificate",
@@ -237,7 +241,7 @@ sub send_results
 
 
         my $tar             = Archive::Tar->new;
-        $args->{result_dir} = $args->{target}."/results/default/";
+        $args->{result_dir} = $args->{target}."/results/default";
         my $result_dir      = $args->{result_dir};
         my $hostname        = hostname();
         my $testrun_id      = $args->{testrun_id};

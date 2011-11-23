@@ -20,6 +20,7 @@ requires 'YAML::Syck';
 requires 'Archive::Tar' => "1.76";
 requires 'IO::Socket::INET';
 requires 'File::Slurp';
+requires 'Digest::MD5';
 
 auto_install;
 
