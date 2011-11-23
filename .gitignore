@@ -10,6 +10,8 @@ cover_db
 MANIFEST.bak
 MANIFEST
 META.yml
+MYMETA.json
+MYMETA.yml
 inc/
 .svn
 README.bak
