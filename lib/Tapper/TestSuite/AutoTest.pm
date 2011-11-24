@@ -203,24 +203,71 @@ sub upload_files
         my $host       = $args->{reportserver};
         my $port       = $args->{reportport};
         my $result_dir = $args->{result_dir};
-        my $file       = "$result_dir/status";
-        my $cmdline    = "#! upload $report_id status plain\n";
-        my $content    = slurp($file);
 
-
-        my $sock = IO::Socket::INET->new(PeerAddr => $args->{report_server},
-                                         PeerPort => $args->{report_api_port},
-                                         Proto    => 'tcp');
-        $self->log->debug("Upload to ".($args->{report_server} // "report_server=UNDEF").":".($args->{report_api_port} // "report_api_port=UNDEF"));
-        unless ($sock) {
-                $self->log->error( "Result TAP in $result_dir/tap.tar.gz can not be sent to Tapper server.");
-                die "Can't open connection to ", ($args->{report_server} // "report_server=UNDEF"), ":", ($args->{report_api_port} // "report_api_port=UNDEF"), ":$!"
+        # Currently no upload for these (personal taste, privacy, too big):
+        #
+        #   sysinfo/installed_packages
+        #
+        my @files = ();
+        push @files, (qw( status
+                          control
+                          sysinfo/cmdline
+                          sysinfo/cpuinfo
+                          sysinfo/df
+                          sysinfo/dmesg.gz
+                          sysinfo/gcc_--version
+                          sysinfo/hostname
+                          sysinfo/interrupts
+                          sysinfo/ld_--version
+                          sysinfo/lspci_-vvn
+                          sysinfo/meminfo
+                          sysinfo/modules
+                          sysinfo/mount
+                          sysinfo/partitions
+                          sysinfo/proc_mounts
+                          sysinfo/slabinfo
+                          sysinfo/uname
+                          sysinfo/uptime
+                          sysinfo/version
+                       ));
+        my @iterations = map { chomp; $_ } `cd  $result_dir ; find $test/sysinfo -name 'iteration.*'`;
+        foreach my $iteration (@iterations) {
+                push @files, map { "$iteration/$_" } (qw( interrupts.before
+                                                          interrupts.after
+                                                          meminfo.before
+                                                          meminfo.after
+                                                          schedstat.before
+                                                          schedstat.after
+                                                          slabinfo.before
+                                                          slabinfo.after
+                                                       ));
         }
+        foreach my $shortfile (@files) {
+                my $file = "$result_dir/$shortfile";
+                next unless -e $file;
 
-        $sock->print($cmdline);
-        $sock->print($content);
-        $sock->close();
+                # upload uncompressed dmesg for easier inline reading
+                if ($file =~ m/dmesg.gz$/) {
+                        system("gunzip $file") or do {
+                                $file      =~ s/\.gz$//;
+                                $shortfile =~ s/\.gz$//;
+                        }
+                }
 
+                my $cmdline    = "#! upload $report_id $shortfile plain\n";
+                my $content = slurp($file);
+                my $sock = IO::Socket::INET->new(PeerAddr => $args->{report_server},
+                                                 PeerPort => $args->{report_api_port},
+                                                 Proto    => 'tcp');
+                $self->log->debug("Upload '$shortfile' to ".($args->{report_server} // "report_server=UNDEF").":".($args->{report_api_port} // "report_api_port=UNDEF"));
+                unless ($sock) {
+                        $self->log->error( "Result file '$file' can not be sent to Tapper server.");
+                        die "Can't open connection to ", ($args->{report_server} // "report_server=UNDEF"), ":", ($args->{report_api_port} // "report_api_port=UNDEF"), ":$!"
+                }
+                $sock->print($cmdline);
+                $sock->print($content);
+                $sock->close();
+        }
         return;
 }
 
@@ -310,13 +357,15 @@ sub parse_args
 {
         my ($self) = @_;
         my @tests;
-        my ($dir, $remote_name, $help, $source);
+        my ($dir, $remote_name, $help, $source, $uploadfiles);
 
+        $uploadfiles = 1;
         GetOptions ("test|t=s"  => \@tests,
                     "directory|d=s" => \$dir,
                     "remote-name|O" => \$remote_name,
                     "source_url|s=s"  => \$source,
                     "help|h"        => \$help,
+                    "uploadfiles!" => \$uploadfiles,
                    );
         $self->print_help() if $help;
         if (not @tests) {
@@ -333,6 +382,7 @@ sub parse_args
                     testrun_id      => $ENV{TAPPER_TESTRUN}         || '',
                     report_group    => $ENV{TAPPER_REPORT_GROUP}    || '',
                     remote_name     => $remote_name,
+                    uploadfiles     => $uploadfiles,
                    };
 
         return $args;
