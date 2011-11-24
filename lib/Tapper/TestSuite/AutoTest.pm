@@ -93,7 +93,7 @@ sub copy_client
                                                         "$target/");
         } else {
                 die "Target dir '$target' does not exist\n" if not -d $target;
-                ($error, $output) = $self->log_and_exec("cp","-r","$downloaddir/*-autotest-*/client/*","$target/");
+                ($error, $output) = $self->log_and_exec("cp","-r","$downloaddir/*autotest*/client/*","$target/");
         }
         die $output if $error;
         return;
@@ -187,7 +187,7 @@ sub report_away
         return $report_id;
 }
 
-=head2 upload_stats
+=head2 upload_files
 
 Upload the stats file to reports framework.
 
@@ -196,9 +196,9 @@ Upload the stats file to reports framework.
 
 =cut
 
-sub upload_stats
+sub upload_files
 {
-        my ($self, $report_id, $args) = @_;
+        my ($self, $report_id, $test, $args) = @_;
 
         my $host       = $args->{reportserver};
         my $port       = $args->{reportport};
@@ -273,7 +273,7 @@ ok 1 - Tapper metainfo
         $tar->write("$result_dir/tap.tar.gz", COMPRESS_GZIP);
 
         my $report_id = $self->report_away($args);
-        $self->upload_stats($report_id, $args);
+        $self->upload_files($report_id, $test, $args) if $args->{uploadfiles};
         return $args;
 }
 
