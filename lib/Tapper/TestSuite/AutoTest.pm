@@ -16,7 +16,7 @@ use Digest::MD5 'md5_hex';
 
 extends 'Tapper::Base';
 
-our $VERSION = '3.000010';
+our $VERSION = '3.000011';
 
 
 =head1 NAME
