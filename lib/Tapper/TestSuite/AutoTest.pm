@@ -349,6 +349,7 @@ sub autotest_meta
                           );
         foreach my $header (keys %metamapping) {
                 my $file = "$result_dir/sysinfo/".$metamapping{$header};
+                next unless -e $file;
                 my ($value) = slurp($file);
                 chomp $value;
                 $meta .= "# Tapper-$header: $value\n";
