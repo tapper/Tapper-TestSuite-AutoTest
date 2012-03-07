@@ -356,12 +356,14 @@ sub autotest_meta
         }
 
         # --- cpu info ---
-        my @lines      = slurp("$result_dir/sysinfo/cpuinfo");
-        my $is_arm_cpu = grep { /Processor.*:.*ARM/ } @lines;
-        my $entry      = $is_arm_cpu ? "Processor" : "model name";
-        my @cpuinfo    = map { chomp ; s/^$entry.*: *//; $_ } grep { /$entry.*:/ } @lines;
-        $meta         .= "# Tapper-cpuinfo: ".@cpuinfo." cores [".$cpuinfo[0]."]\n" if @cpuinfo;
-
+        my $cpuinfofile    = "$result_dir/sysinfo/cpuinfo";
+        if (-e $cpuinfofile) {
+                my @lines      = slurp($cpuinfofile);
+                my $is_arm_cpu = grep { /Processor.*:.*ARM/ } @lines;
+                my $entry      = $is_arm_cpu ? "Processor" : "model name";
+                my @cpuinfo    = map { chomp ; s/^$entry.*: *//; $_ } grep { /$entry.*:/ } @lines;
+                $meta         .= "# Tapper-cpuinfo: ".@cpuinfo." cores [".$cpuinfo[0]."]\n" if @cpuinfo;
+        }
         return $meta;
 }
 
