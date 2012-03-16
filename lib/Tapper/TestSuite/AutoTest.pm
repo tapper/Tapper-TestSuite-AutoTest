@@ -184,6 +184,7 @@ sub report_away
         ($report_id) = $report_id =~ /(\d+)$/;
         $sock->print($gzipped_content);
         $sock->close();
+        $self->log->debug( "Report $report_id (http://".$args->{report_server}."/tapper/reports/id/$report_id)");
         return $report_id;
 }
 
@@ -271,6 +272,43 @@ sub upload_files
         return;
 }
 
+=head2 get_machine_name
+
+Return hostname for metainfo in typical Tapper notation, i.e., just
+the hostname (without FQDN) in host context or C<host:guest> (colon
+separated) in guest context.
+
+=cut
+
+sub get_machine_name
+{
+        my $etc_tapper = "/etc/tapper";
+
+        my $hostname = hostname();
+        $hostname =~ s/\..*$//; # no FQDN
+        # combined machine name in Tapper automation guest environment
+        if ($ENV{TAPPER_HOSTNAME}) {
+                $hostname = "$ENV{TAPPER_HOSTNAME}:$hostname"
+        } elsif ( -r $etc_tapper ) {
+                my @tapper_config = ();
+                my $TAPPERCFG;
+                open $TAPPERCFG, "<", $etc_tapper and do {
+                        local $/;
+                        @tapper_config = <$TAPPERCFG>;
+                        close $TAPPERCFG;
+                };
+                my ($machinename) =
+                 map {
+                      my $m = $_ ; $m =~ s/^[^:]*:// ; $m
+                     }
+                  grep {
+                          /hostname:/
+                  } @tapper_config;
+                $hostname = "${machinename}:$hostname";
+        }
+        return $hostname;
+}
+
 =head2 send_results
 
 Send the test results to Tapper.
@@ -286,13 +324,11 @@ sub send_results
         my ($self, $test, $args) = @_;
         my $report;
 
-
         my $tar             = Archive::Tar->new;
         $args->{result_dir} = $args->{target}."/results/default";
         my $result_dir      = $args->{result_dir};
-        my $hostname        = hostname();
+        my $hostname        = get_machine_name;
         my $testrun_id      = $args->{testrun_id};
-
         my $report_group    = $args->{report_group};
 
         my $report_meta = "Version 13
