@@ -1,4 +1,5 @@
 package Tapper::TestSuite::AutoTest;
+# ABSTRACT: Tapper - Complete OS testing in a box via autotest
 
 use warnings;
 use strict;
@@ -15,13 +16,6 @@ use File::Spec::Functions 'tmpdir';
 use Digest::MD5 'md5_hex';
 
 extends 'Tapper::Base';
-
-our $VERSION = '3.000011';
-
-
-=head1 NAME
-
-Tapper::TestSuite::AutoTest - Tapper - Complete OS testing in a box via autotest
 
 =head1 SYNOPSIS
 
@@ -335,7 +329,7 @@ sub send_results
 1..1
 # Tapper-Suite-Name: Autotest-$test
 # Tapper-Machine-Name: $hostname
-# Tapper-Suite-Version: $VERSION
+# Tapper-Suite-Version: ".$Tapper::TestSuite::AutoTest::VERSION."
 ok 1 - Tapper metainfo
 ";
         $report_meta .= $testrun_id   ? "# Tapper-Reportgroup-Testrun: $testrun_id\n"     : '';
@@ -492,59 +486,5 @@ sub run
         }
         return $args;
 }
-
-
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-tapper-testsuite-autotest at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Tapper-TestSuite-AutoTest>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc Tapper::TestSuite::AutoTest
-
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Tapper-TestSuite-AutoTest>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Tapper-TestSuite-AutoTest>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Tapper-TestSuite-AutoTest>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Tapper-TestSuite-AutoTest/>
-
-=back
-
-
-=head1 AUTHOR
-
-AMD OSRC Tapper Team, C<< <tapper at amd64.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2008-2011 AMD OSRC Tapper Team, all rights reserved.
-
-This program is released under the following license: freebsd
-
-
-=cut
 
 1; # End of Tapper::TestSuite::AutoTest

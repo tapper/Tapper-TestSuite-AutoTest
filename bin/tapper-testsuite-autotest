@@ -1,4 +1,6 @@
-#! perl
+#! /usr/bin/perl
+# PODNAME: tapper-testsuite-autotest
+# ABSTRACT: cmdline frontend to Tapper::TestSuite::AutoTest
 
 use Log::Log4perl;
 
@@ -15,10 +17,6 @@ my $args = $wrapper->parse_args();
 $args = $wrapper->install($args);
 $args = $wrapper->run($args);
 
-=head1 NAME
-
-tapper-testsuite-autotest - Frontend tool for running autotest in a Tapper infrastructure
-
 =head1 SYNOPSIS
 
 Run an autotest subtest and report results to Tapper:
@@ -31,15 +29,5 @@ Run multiple autotest subtests and report results to Tapper:
 
 For more information see the Perl module
 L<Tapper::TestSuite::AutoTest|Tapper::TestSuite::AutoTest>.
-
-=head1 AUTHOR
-
-AMD OSRC Tapper Team, C<< <tapper at amd64.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2008-2011 AMD OSRC Tapper Team, all rights reserved.
-
-This program is released under the following license: freebsd
 
 =cut
