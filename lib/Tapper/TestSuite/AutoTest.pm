@@ -55,7 +55,7 @@ The reporting evaluates several environment variables:
   TAPPER_REPORT_GROUP
 
 with some sensible defaults. They are automatically provided when
-using Tapper automation. 
+using Tapper automation.
 
 In case you run it manually the most important variable is
 C<TAPPER_REPORT_SERVER> pointing to your central Tapper server.
