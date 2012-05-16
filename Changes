@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+4.0.1     2012-05-16
         - get 'host:guest' name in Tapper-metainfo
         - add metainfo from autotest data
         - upload autotest log+result files
