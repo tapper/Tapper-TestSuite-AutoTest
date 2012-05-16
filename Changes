@@ -1,6 +1,12 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+        - get 'host:guest' name in Tapper-metainfo
+        - add metainfo from autotest data
+        - upload autotest log+result files
+        - improved download+temp file caching
+        - use default Tapper ports
+        - allow local file:// URLs for autotest client
         - big Dist::Zilla roundhouse kick
 
 2011-11-24  Steffen Schwigon  <ss5@renormalist.net>
