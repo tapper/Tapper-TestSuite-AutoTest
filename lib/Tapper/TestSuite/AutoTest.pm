@@ -507,7 +507,7 @@ sub parse_args
 
         my $args = {subtests        => \@tests,
                     target          => $dir,
-                    source          => $source || 'http://github.com/renormalist/autotest/tarball/master',
+                    source          => $source || 'http://github.com/autotest/autotest/tarball/0.14.3',
                     report_server   => $ENV{TAPPER_REPORT_SERVER},
                     report_api_port => $ENV{TAPPER_REPORT_API_PORT} || '7358',
                     report_port     => $ENV{TAPPER_REPORT_PORT}     || '7357',
