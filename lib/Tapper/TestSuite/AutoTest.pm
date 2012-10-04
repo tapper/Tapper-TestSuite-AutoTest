@@ -441,7 +441,7 @@ sub parse_args
                    );
         $self->print_help() if $help;
         if (not @tests) {
-                print "No subtest requested provided. Please name at least one subtest you want to run\n\n.";
+                print "Please name at least one subtest you want to run (--test=...).\n\n.";
                 $self->print_help();
         }
 
