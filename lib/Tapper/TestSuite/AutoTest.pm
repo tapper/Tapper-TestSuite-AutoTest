@@ -5,6 +5,7 @@ use warnings;
 use strict;
 use 5.010;
 
+use Cwd;
 use Moose;
 use Getopt::Long qw/GetOptions/;
 use Sys::Hostname qw/hostname/;
@@ -86,42 +87,28 @@ sub makedir
         return 0;
 }
 
+=head2 $self->log_and_system(@args)
 
-=head2 log_and_exec
-
-Execute a given command. Make sure the command is logged if requested and none
-of its output pollutes the console. In scalar context the function returns 0
-for success and the output of the command on error. In array context the
-function always return a list containing the return value of the command and
-the output of the command.
-
-@param string - command
-
-@return success - 0
-@return error   - error string
-@returnlist success - (0, output)
-@returnlist error   - (return value of command, output)
+Log and do a multi arg C<system()>.
 
 =cut
 
-sub log_and_exec
-{
-        my ($self, @cmd) = @_;
-        my $cmd = join " ",@cmd;
-        $self->log->debug( $cmd );
-        my $output=`$cmd 2>&1`;
-        my $retval=$?;
-        if (not defined($output)) {
-                $output = "Executing $cmd failed";
-                $retval = 1;
-        }
-        chomp $output if $output;
-        if ($retval) {
-                return ($retval >> 8, $output) if wantarray;
-                return $output;
-        }
-        return (0, $output) if wantarray;
-        return 0;
+sub log_and_system {
+        my ($self, @args) = @_;
+        $self->log->debug(join(" ", @args));
+        system(@args);
+}
+
+=head2 $self->log_and_system_shell(@args)
+
+Log and do a single arg C<system()>.
+
+=cut
+
+sub log_and_system_shell {
+        my ($self, @args) = @_;
+        $self->log->debug(join(" ", @args));
+        system(join(" ", @args));
 }
 
 =head2 copy_client
@@ -141,13 +128,13 @@ sub copy_client
         my ($error, $output);
         `which rsync`;
         if ( $? == 0)  {
-                ($error, $output) = $self->log_and_exec("rsync",
-                                                        "-a",
-                                                        "$downloaddir/*autotest*/client/",
-                                                        "$target/");
+                ($error, $output) = $self->log_and_system_shell("rsync",
+                                                                "-a",
+                                                                "$downloaddir/*autotest*/",
+                                                                "$target/");
         } else {
                 die "Target dir '$target' does not exist\n" if not -d $target;
-                ($error, $output) = $self->log_and_exec("cp","-r","$downloaddir/*autotest*/client/*","$target/");
+                ($error, $output) = $self->log_and_system_shell("cp","-r","$downloaddir/*autotest*/*","$target/");
         }
         die $output if $error;
         return;
@@ -185,8 +172,8 @@ sub install
                         $downloadfile = "$downloaddir/autotest-download-$checksum.tgz";
                         if (! -e $downloadfile) {
                                 $self->log->debug( "Download autotest from $source to $downloadfile");
-                                ($error, $output) = $self->log_and_exec('wget', "--no-check-certificate",
-                                                                        $source, "-O", $downloadfile);
+                                ($error, $output) = $self->log_and_system('wget', "--no-check-certificate",
+                                                                          $source, "-O", $downloadfile);
                                 die $output if $error;
                         }
                 } elsif ($source =~ m,^file://,) {
@@ -196,9 +183,9 @@ sub install
                         $downloadfile = $source;
                 }
                 $self->log->debug( "Unpack autotest from file $downloadfile to subdir $downloaddir");
-                ($error, $output) = $self->log_and_exec("tar",
-                                                        "-xzf", $downloadfile,
-                                                        "-C", $downloaddir);
+                ($error, $output) = $self->log_and_system("tar",
+                                                          "-xzf", $downloadfile,
+                                                          "-C", $downloaddir);
                 die $output if $error;
                 $self->copy_client($downloaddir, $target);
                 die $output if $error;
@@ -379,7 +366,7 @@ sub send_results
         my $report;
 
         my $tar             = Archive::Tar->new;
-        $args->{result_dir} = $args->{target}."/results/default";
+        $args->{result_dir} = $args->{target}."/client/results/default";
         my $result_dir      = $args->{result_dir};
         my $hostname        = get_machine_name;
         my $testrun_id      = $args->{testrun_id};
@@ -537,13 +524,16 @@ sub run
 {
         my ($self, $args) = @_;
         my $target = $args->{target};
-        my $autotest = "$target/bin/autotest";
+        my $autotest = "./autotest-local";
 
+        my $olddir = cwd();
         foreach my $test (@{$args->{subtests} || [] }) {
-                my $test_path = "$target/tests/$test/control";
-                $self->log_and_exec($autotest, "--tap", $test_path);
+                $self->log->debug("chdir $target/client");
+                chdir "$target/client";
+                $self->log_and_system($autotest, "run", "--tap", $test);
                 $self->send_results($test, $args);
         }
+        chdir $olddir;
         return $args;
 }
 
