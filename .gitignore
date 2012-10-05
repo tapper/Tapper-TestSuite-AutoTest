@@ -1,4 +1,5 @@
 .*
 !.gitignore
 Tapper-TestSuite-AutoTest-*
+tapper-testsuite-autotest.bin
 Debian_CPANTS.txt
