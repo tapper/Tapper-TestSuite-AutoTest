@@ -159,9 +159,10 @@ sub install
 
         my $tmp = tmpdir;
         my $source   = $args->{source};
-        my $checksum = md5_hex($source);
-        my $target   = $args->{target} || "$tmp/tapper-testsuite-autotest-client-$checksum";
-        my $downloaddir = "$tmp/tapper-testsuite-autotest-mirror-$checksum";
+        my $user     = $ENV{USER} || 'unknown';
+        my $checksum = substr(md5_hex($source), 0,7);
+        my $target   = $args->{target} || "$tmp/tapper-testsuite-autotest-client-$user-$checksum";
+        my $downloaddir = "$tmp/tapper-testsuite-autotest-mirror-$user-$checksum";
 
         $self->makedir($target);
         $self->makedir($downloaddir);
