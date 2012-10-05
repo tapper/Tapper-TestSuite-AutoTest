@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+        - work with newer versions of autotest
+        - become independent from Tapper::* libs
 
 4.0.1     2012-05-16
         - get 'host:guest' name in Tapper-metainfo
