@@ -1,7 +1,10 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
-        - work with newer versions of autotest
+        - utility script to build standalone PAR executable
+        - local file caching differenciates between users
+        - adapt to new autotest version 0.14.* (but not 0.15 yet)
+        - use autotest 0.14.3 as default
         - become independent from Tapper::* libs
 
 4.0.1     2012-05-16
