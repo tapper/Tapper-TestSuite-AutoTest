@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+4.1.0     2012-10-19
         - utility script to build standalone PAR executable
         - local file caching differenciates between users
         - adapt to new autotest version 0.14.* (but not 0.15 yet)
