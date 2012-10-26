@@ -34,7 +34,7 @@ You most likely want to run the frontend cmdline tool like this
 
 =back
 
-=head1 ABOUT
+=head1 DESCRIPTION
 
 This module wraps autotest to make its (sub) tests available for Tapper.
 
