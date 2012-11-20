@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+        - fix forgotten frontend 'tapper-testsuite-autotest'
 
 4.1.1     2012-11-20
         - dzil pluginbundle TAPPER
